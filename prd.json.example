@@ -1,0 +1,33 @@
+{
+  "project": "MyApp",
+  "branchName": "ralph/my-feature",
+  "description": "Short description of what this Ralph run should build",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "First task title",
+      "description": "As a [role], I need [feature] so that [benefit].",
+      "acceptanceCriteria": [
+        "Criterion one",
+        "Criterion two",
+        "All tests pass"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Second task title",
+      "description": "As a [role], I need [feature] so that [benefit].",
+      "acceptanceCriteria": [
+        "Criterion one",
+        "Criterion two",
+        "All tests pass"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
