@@ -53,7 +53,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 # Force UTF-8 throughout so agent output (em dashes, arrows, etc.) renders correctly
-chcp 65001 | Out-Null
+if ($IsWindows) { chcp 65001 | Out-Null }
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 [Console]::InputEncoding  = [System.Text.Encoding]::UTF8
 $OutputEncoding            = [System.Text.Encoding]::UTF8
@@ -62,11 +62,17 @@ $OutputEncoding            = [System.Text.Encoding]::UTF8
 # Kills any process holding a given port. Called after each iteration and on exit.
 function Stop-DevServer([int[]]$Ports = @(3000)) {
     foreach ($port in $Ports) {
-        $pids = netstat -ano 2>$null |
-                Select-String ":$port\s" |
-                ForEach-Object { ($_ -split '\s+')[-1] } |
-                Where-Object { $_ -match '^\d+$' } |
-                Sort-Object -Unique
+        if ($IsWindows) {
+            $pids = netstat -ano 2>$null |
+                    Select-String ":$port\s" |
+                    ForEach-Object { ($_ -split '\s+')[-1] } |
+                    Where-Object { $_ -match '^\d+$' } |
+                    Sort-Object -Unique
+        } else {
+            $pids = (lsof -ti ":$port" 2>/dev/null) -split "`n" |
+                    Where-Object { $_ -match '^\d+$' } |
+                    Sort-Object -Unique
+        }
         foreach ($p in $pids) {
             try {
                 Stop-Process -Id ([int]$p) -Force -ErrorAction SilentlyContinue

@@ -1,13 +1,13 @@
-# Ralph Loop — PowerShell Edition
+# Ralph Loop
 
 An autonomous AI agent loop for building applications from a PRD.
 Inspired by [snarktank/ralph](https://github.com/snarktank/ralph).
 
 ## How it works
 
-Ralph runs your AI coding tool (Claude Code or Amp) in a loop — each iteration
-gets a fresh context and picks up where the previous one left off by reading
-shared state files. It keeps iterating until every user story in the PRD
+Ralph runs your AI coding tool (Claude Code, Amp, or OpenCode) in a loop — each
+iteration gets a fresh context and picks up where the previous one left off by
+reading shared state files. It keeps iterating until every user story in the PRD
 passes its acceptance criteria.
 
 ```
@@ -24,46 +24,69 @@ passes its acceptance criteria.
 └─────────────────────────────────────┘
 ```
 
+## Requirements
+
+- **PowerShell Core (`pwsh`)** — runs on Windows, macOS, and Linux
+  - Windows: included with Windows 10/11, or [download here](https://aka.ms/powershell)
+  - macOS: `brew install --cask powershell`
+  - Linux: [Microsoft install guide](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-linux)
+- At least one AI coding tool: `claude`, `amp`, or `opencode`
+
 ## Quick Start
 
 ### 1. Drop `ralph/` into your project
 
-```powershell
+```bash
 # Copy the folder into any project root
-Copy-Item -Recurse path\to\ralph  .\ralph
+cp -r path/to/ralph ./ralph
 ```
 
 ### 2. Set up your PRD
 
-```powershell
-Copy-Item ralph\prd.json.example ralph\prd.json
+```bash
+cp ralph/prd.json.example ralph/prd.json
 ```
 
-Edit `ralph\prd.json` to describe your feature as user stories.
+Edit `ralph/prd.json` to describe your feature as user stories.
 
 ### 3. Customise the prompt
 
-Edit `ralph\CLAUDE.md` to add your project's:
+Edit `ralph/CLAUDE.md` to add your project's:
 - Tech stack
 - Build / test / lint commands
 - Known conventions
 
 ### 4. Run Ralph
 
+**macOS / Linux:**
+```bash
+chmod +x ralph/ralph.sh
+./ralph/ralph.sh
+
+# OpenCode + specific model
+./ralph/ralph.sh -Tool opencode -Model openai/gpt-4o
+./ralph/ralph.sh -Tool opencode -Model ollama/qwen2.5-coder   # local via Ollama
+
+# Automatic model fallback chain — switches when a rate-limit is hit
+./ralph/ralph.sh -Tool opencode -Models anthropic/claude-sonnet-4-5,openai/gpt-4o,ollama/llama3.3
+
+# Use Amp
+./ralph/ralph.sh -Tool amp -Max 15
+
+# Help
+./ralph/ralph.sh -Help
+```
+
+**Windows (PowerShell):**
 ```powershell
-# Default: Claude Code, 10 iterations
 .\ralph\ralph.ps1
 
 # OpenCode + specific model
 .\ralph\ralph.ps1 -Tool opencode -Model openai/gpt-4o
-.\ralph\ralph.ps1 -Tool opencode -Model google/gemini-2.0-flash
 .\ralph\ralph.ps1 -Tool opencode -Model ollama/qwen2.5-coder   # local via Ollama
 
-# Automatic model fallback chain — switches model when a rate-limit is hit
+# Automatic model fallback chain — switches when a rate-limit is hit
 .\ralph\ralph.ps1 -Tool opencode -Models anthropic/claude-sonnet-4-5,openai/gpt-4o,ollama/llama3.3
-
-# Custom cooldown (seconds to wait after all models are exhausted)
-.\ralph\ralph.ps1 -Tool opencode -Models anthropic/claude-sonnet-4-5,openai/gpt-4o -RateLimitCooldown 120
 
 # Use Amp
 .\ralph\ralph.ps1 -Tool amp -Max 15
@@ -78,14 +101,15 @@ Everything lives inside `ralph/` — copy the whole folder into any project.
 
 ```
 ralph/
-  ralph.ps1         ← Main loop script  (entry point)
-  prd.json          ← Your task list    (copy from prd.json.example)
+  ralph.ps1         ← Main loop script        (all platforms via pwsh)
+  ralph.sh          ← Shell wrapper            (macOS / Linux entry point)
+  prd.json          ← Your task list           (copy from prd.json.example)
   prd.json.example  ← Template
   CLAUDE.md         ← Prompt for Claude Code / OpenCode
   prompt.md         ← Prompt for Amp
-  AGENTS.md         ← Codebase patterns (auto-updated by agent)
+  AGENTS.md         ← Codebase patterns        (auto-updated by agent)
   progress.txt      ← Append-only iteration log (auto-created)
-  archive/          ← Previous runs (auto-created)
+  archive/          ← Previous runs            (auto-created)
 ```
 
 ## prd.json format
