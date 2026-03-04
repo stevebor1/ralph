@@ -91,26 +91,3 @@ Output exactly one of these on the final line:
 
 ## Project context
 
-**Stack:** Node 20 / TypeScript / Next.js 16 (App Router, Turbopack) /
-Tailwind CSS v4 / Shadcn/ui v3 / Zustand v5 / TanStack Query v5 /
-React Hook Form v7 / Zod v4 / Prisma 7 (better-sqlite3 adapter) / react-pdf v10
-
-**Quality gate commands:**
-```bash
-npx tsc --noEmit      # must show 0 errors
-npm run build         # must complete without error
-```
-
-**Key gotchas (read before every iteration):**
-- Tailwind v4: use `@import "tailwindcss"` in globals.css — no `tailwind.config.js`
-- Shadcn/ui v3: `npx shadcn@latest init` — auto-detects Tailwind v4
-- Zod v4: `z.record()` requires TWO args — `z.record(keySchema, valueSchema)`
-- Prisma 7: no zero-arg `PrismaClient()` — use `@prisma/adapter-better-sqlite3`
-- Prisma 7: import client from `@/generated/prisma/client`
-- Next.js 16: middleware file is `src/proxy.ts`, export named `proxy` (not `middleware`)
-- proxy.ts runs in Edge runtime — never import Prisma or Node.js-only packages there
-- `create-next-app` won't run in a non-empty dir — scaffold to temp dir, then copy
-- Use `@/*` path alias for all imports from `src/`
-- Server components by default; `"use client"` only when required
-
-See `ralph/AGENTS.md` for the full and up-to-date list.

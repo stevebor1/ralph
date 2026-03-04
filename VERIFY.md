@@ -73,19 +73,3 @@ Output exactly one of these on the final line:
 ---
 
 ## Project context
-
-**Quality gates:**
-```bash
-npx tsc --noEmit
-npm run build
-```
-
-**Key gotchas:**
-- Tailwind v4: `@import "tailwindcss"` in globals.css — no tailwind.config.js
-- Zod v4: `z.record()` requires TWO args
-- Prisma 7: import from `@/generated/prisma/client`
-- Next.js 16: middleware = `src/proxy.ts` exporting `proxy`
-- proxy.ts is Edge runtime — no Prisma/Node imports
-- `@/*` alias for all imports from `src/`
-
-See `ralph/AGENTS.md` for the full list.
